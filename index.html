@@ -1,0 +1,33 @@
+	WITH user_per_test_group AS (									
+	SELECT uid,									
+	CASE WHEN groups.group ='A' THEN 'group A'									
+	WHEN groups.group ='B' THEN 'group B'									
+	ELSE 'no group' END as test_groups,									
+	COUNT(groups.group)AS total_users_testec									
+	FROM groups									
+	GROUP BY groups.group,uid									
+	)									
+	SELECT									
+	test_groups AS group_name,									
+	COUNT(DISTINCT testers.uid)AS totlal_users_tested,									
+	COUNT(DISTINCT activity.uid)AS total_users_with_activity,									
+	(COUNT(DISTINCT CASE WHEN activity.uid IS NOT NULL THEN users.id END) * 100.0 / COUNT(DISTINCT users.id)) AS conversion_rate_percentage,									
+										
+										
+	SUM(round(activity.spent,2))::float as total_spent_per_group									
+	FROM user_per_test_group testers									
+	LEFT JOIN users ON users.id = testers.uid									
+	LEFT JOIN activity ON users.id= activity.uid									
+	WHERE test_groups IN( 'group A','group B')									
+	GROUP BY test_groups									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
